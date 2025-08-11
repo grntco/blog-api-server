@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import prisma from "./config/prisma-config.js";
 
 dotenv.config();
 
@@ -12,6 +13,22 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res, next) => {
   res.send("Hello world!");
+});
+
+app.post("/users", async (req, res, next) => {
+  const newUser = await prisma.user.create({
+    data: {
+      firstName: "Grant",
+      lastName: "Collins",
+      email: "grantcollins@gmail.com",
+      password: "password",
+      admin: true,
+    },
+  });
+
+  console.log(newUser);
+
+  res.send(newUser);
 });
 
 app.listen(PORT, () =>
