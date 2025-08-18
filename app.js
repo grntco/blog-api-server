@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import prisma from "./config/prisma-config.js";
+import postRouter from "./routes/post-router.js";
 
 dotenv.config();
 
@@ -15,21 +16,23 @@ app.get("/", (req, res, next) => {
   res.send("Hello world!");
 });
 
-app.post("/users", async (req, res, next) => {
-  const newUser = await prisma.user.create({
-    data: {
-      firstName: "Grant",
-      lastName: "Collins",
-      email: "grantcollins@gmail.com",
-      password: "password",
-      admin: true,
-    },
-  });
+app.use(postRouter);
 
-  console.log(newUser);
+// app.post("/users", async (req, res, next) => {
+//   const newUser = await prisma.user.create({
+//     data: {
+//       firstName: "Grant",
+//       lastName: "Collins",
+//       email: "grantcollins@gmail.com",
+//       password: "password",
+//       admin: true,
+//     },
+//   });
 
-  res.send(newUser);
-});
+//   console.log(newUser);
+
+//   res.send(newUser);
+// });
 
 app.listen(PORT, () =>
   console.log(`Server started and running on port ${PORT}!`)
