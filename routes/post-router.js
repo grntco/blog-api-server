@@ -3,6 +3,8 @@ import {
   getAllPosts,
   getPost,
   createPost,
+  editPost,
+  deletePost,
 } from "../controllers/post-controller.js";
 
 const postRouter = Router();
@@ -15,7 +17,9 @@ postRouter.get("/posts/:postId", getPost);
 postRouter.post("/posts", createPost);
 
 // PUTs
+postRouter.put("/posts/:postId", editPost);
 
 // DELETEs
+postRouter.delete("/posts/:postId", deletePost);
 
 export default postRouter;

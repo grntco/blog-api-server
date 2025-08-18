@@ -11,7 +11,7 @@ export const getAllPosts = async (req, res, next) => {
 
     res.send(posts);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send({ error: err });
   }
 };
 
@@ -33,7 +33,7 @@ export const getPost = async (req, res, next) => {
 
     res.send(post);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send({ error: err });
   }
 };
 
@@ -62,20 +62,66 @@ export const createPost = async (req, res, next) => {
 
     res.send(newPost);
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send({ error: err });
   }
 };
 
 // PUTS
-// update/edit
-// Think about forms
 
-// editPost (everything: title, content, slug, author, published, etc.)
+// TODO: must be authorized
+export const editPost = async (req, res, next) => {
+  const postId = parseInt(req.params.postId);
+  try {
+    const data = req.body;
+    console.log(data);
 
-// editPostStatus (just updates status)
+    if (isNaN(postId)) {
+      console.error("Error: Invalid post id");
+      return res.status(400).send({ error: "Invalid post id" });
+    }
 
-// editPostAuthor.... probalby unnecessary
+    // TODO: validate this a different way with express-validator
+    if (!data || Object.keys(data).length === 0) {
+      console.error("Error: No form data received");
+      return res.status(400).send({ error: "No form data received" });
+    }
 
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        title: data.title,
+        content: data.content,
+        slug: data.slug,
+        published: data.published === "true" || data.published === true,
+      },
+    });
+
+    res.send(updatedPost);
+  } catch (err) {
+    console.error(`Error: Unable to update post with id ${postId}`);
+    res.status(400).send({ error: err.message });
+  }
+};
+
+// Maybe... editPostStatus (just updates status)
 
 // DELETE
-// delete
+
+// TODO: must be authorized
+export const deletePost = async (req, res, next) => {
+  const postId = parseInt(req.params.postId);
+
+  try {
+    if (isNaN(postId)) {
+      console.error("Error: Invalid post id");
+      return res.status(400).send({ error: "Invalid post id" });
+    }
+
+    const deletedPost = await prisma.post.delete({ where: { id: postId } });
+
+    res.send(deletedPost);
+  } catch (err) {
+    console.error(`Error: Unable to delete post with id ${postId}`);
+    res.status(400).send({ error: err.message });
+  }
+};
