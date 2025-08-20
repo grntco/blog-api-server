@@ -1,17 +1,19 @@
 import prisma from "../config/prisma-config.js";
 
+// TODO: add server logs
+
 // GETS
 export const getAllPosts = async (req, res, next) => {
   try {
     const posts = await prisma.post.findMany();
 
     if (posts.length === 0) {
-      return res.status(404).send({ error: "Posts not found" });
+      return res.status(404).json({ error: "No posts found" });
     }
 
-    res.send(posts);
+    res.json(posts);
   } catch (err) {
-    res.status(400).send({ error: err });
+    res.status(400).json({ error: err });
   }
 };
 
@@ -20,7 +22,7 @@ export const getPost = async (req, res, next) => {
     const postId = parseInt(req.params.postId);
 
     if (isNaN(postId)) {
-      return res.status(400).send({ error: "Invalid post ID" });
+      return res.status(400).json({ error: "Invalid post ID" });
     }
 
     const post = await prisma.post.findUnique({
@@ -28,12 +30,12 @@ export const getPost = async (req, res, next) => {
     });
 
     if (!post) {
-      return res.status(404).send({ error: "Post not found" });
+      return res.status(404).json({ error: "Post not found" });
     }
 
-    res.send(post);
+    res.json(post);
   } catch (err) {
-    res.status(400).send({ error: err });
+    res.status(400).json({ error: err });
   }
 };
 
@@ -41,7 +43,7 @@ export const getPost = async (req, res, next) => {
 
 // POSTS
 export const createPost = async (req, res, next) => {
-  // TODO: temp, make sure to switch for req.user.id
+  // TODO: temp, make sure to switch for req.user.id, and newPost for req.data
   const userId = 1;
 
   try {
@@ -57,36 +59,35 @@ export const createPost = async (req, res, next) => {
     });
 
     if (!newPost) {
-      return res.status(400).send({ error: "Unable to create post." });
+      return res.status(400).json({ error: "Unable to create post" });
     }
 
-    res.send(newPost);
+    res.json(newPost);
   } catch (err) {
-    res.status(400).send({ error: err });
+    res.status(400).json({ error: err });
   }
 };
 
-// PUTS
+// PUTs/PATCHes
 
 // TODO: must be authorized
 export const editPost = async (req, res, next) => {
   const postId = parseInt(req.params.postId);
   try {
     const data = req.body;
-    console.log(data);
 
     if (isNaN(postId)) {
       console.error("Error: Invalid post id");
-      return res.status(400).send({ error: "Invalid post id" });
+      return res.status(400).json({ error: "Invalid post id" });
     }
 
     // TODO: validate this a different way with express-validator
     if (!data || Object.keys(data).length === 0) {
       console.error("Error: No form data received");
-      return res.status(400).send({ error: "No form data received" });
+      return res.status(400).json({ error: "No form data received" });
     }
 
-    const updatedPost = await prisma.post.update({
+    const post = await prisma.post.update({
       where: { id: postId },
       data: {
         title: data.title,
@@ -96,10 +97,10 @@ export const editPost = async (req, res, next) => {
       },
     });
 
-    res.send(updatedPost);
+    res.json(post);
   } catch (err) {
     console.error(`Error: Unable to update post with id ${postId}`);
-    res.status(400).send({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -114,14 +115,14 @@ export const deletePost = async (req, res, next) => {
   try {
     if (isNaN(postId)) {
       console.error("Error: Invalid post id");
-      return res.status(400).send({ error: "Invalid post id" });
+      return res.status(400).json({ error: "Invalid post id" });
     }
 
-    const deletedPost = await prisma.post.delete({ where: { id: postId } });
+    const post = await prisma.post.delete({ where: { id: postId } });
 
-    res.send(deletedPost);
+    res.json(post);
   } catch (err) {
     console.error(`Error: Unable to delete post with id ${postId}`);
-    res.status(400).send({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };

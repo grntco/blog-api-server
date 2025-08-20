@@ -13,11 +13,13 @@ const postRouter = Router();
 postRouter.get("/posts", getAllPosts);
 postRouter.get("/posts/:postId", getPost);
 
+// Protected:
+
 // POSTs
 postRouter.post("/posts", createPost);
 
-// PUTs
-postRouter.put("/posts/:postId", editPost);
+// PUTs/PATCHes
+postRouter.patch("/posts/:postId", editPost);
 
 // DELETEs
 postRouter.delete("/posts/:postId", deletePost);
