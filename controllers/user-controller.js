@@ -40,15 +40,15 @@ export const getUser = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const data = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     const newUser = await prisma.user.create({
       data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        // TODO: hash password big boi
-        password: data.password,
+        firstName,
+        lastName,
+        email,
+        // TODO: pls hash this 
+        password,
       },
     });
 
@@ -67,9 +67,7 @@ export const createUser = async (req, res, next) => {
 export const editUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
-    const data = req.body;
-
-    console.log(data);
+    const { firstName, lastName, email } = req.body;
 
     if (isNaN(userId)) {
       return res.status(400).json({ error: "Invalid user id" });
@@ -78,9 +76,9 @@ export const editUser = async (req, res, next) => {
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
+        firstName,
+        lastName,
+        email,
         // TODO: edit password? probably not
       },
     });

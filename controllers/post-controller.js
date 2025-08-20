@@ -45,24 +45,24 @@ export const getPost = async (req, res, next) => {
 export const createPost = async (req, res, next) => {
   // TODO: temp, make sure to switch for req.user.id, and newPost for req.data
   const userId = 1;
+  const { title, content, slug, published } = req.body;
 
   try {
-    const newPost = await prisma.post.create({
+    const post = await prisma.post.create({
       data: {
         authorId: userId,
-        title: "A test post",
-        content:
-          "This is the content of a blog, I wonder if I should store in md.",
-        published: false,
-        slug: "a-test-post",
+        title,
+        content,
+        slug,
+        published: published === "true" || published === true,
       },
     });
 
-    if (!newPost) {
+    if (!post) {
       return res.status(400).json({ error: "Unable to create post" });
     }
 
-    res.json(newPost);
+    res.json(post);
   } catch (err) {
     res.status(400).json({ error: err });
   }
@@ -74,7 +74,7 @@ export const createPost = async (req, res, next) => {
 export const editPost = async (req, res, next) => {
   const postId = parseInt(req.params.postId);
   try {
-    const data = req.body;
+    const { title, content, slug, published } = req.body;
 
     if (isNaN(postId)) {
       console.error("Error: Invalid post id");
@@ -90,10 +90,10 @@ export const editPost = async (req, res, next) => {
     const post = await prisma.post.update({
       where: { id: postId },
       data: {
-        title: data.title,
-        content: data.content,
-        slug: data.slug,
-        published: data.published === "true" || data.published === true,
+        title,
+        content,
+        slug,
+        published: published === "true" || published === true,
       },
     });
 
