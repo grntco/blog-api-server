@@ -1,7 +1,7 @@
 import prisma from "../config/prisma-config.js";
 
 // TODO: add server logs
-// GETs
+// TODO: remove password hash from returns
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await prisma.user.findMany();
@@ -36,34 +36,6 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-// POSTs
-
-export const createUser = async (req, res, next) => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
-
-    const newUser = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        // TODO: pls hash this 
-        password,
-      },
-    });
-
-    if (!newUser) {
-      return res.status(400).json({ error: "Unable to create user" });
-    }
-
-    res.json(newUser);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err });
-  }
-};
-
-// PUTs/PATCHes
 export const editUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
@@ -79,7 +51,6 @@ export const editUser = async (req, res, next) => {
         firstName,
         lastName,
         email,
-        // TODO: edit password? probably not
       },
     });
 
@@ -90,7 +61,6 @@ export const editUser = async (req, res, next) => {
   }
 };
 
-// DELETEs
 export const deleteUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);

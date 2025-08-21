@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import prisma from "./config/prisma-config.js";
+import authRouter from "./routes/auth-router.js";
 import postRouter from "./routes/post-router.js";
 import userRouter from "./routes/user-router.js";
 import commentRouter from "./routes/comment-router.js";
@@ -18,6 +18,7 @@ app.get("/", (req, res, next) => {
   res.send("Hello world!");
 });
 
+app.use(authRouter);
 app.use(postRouter);
 app.use(userRouter);
 app.use(commentRouter);

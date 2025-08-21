@@ -1,10 +1,9 @@
 import prisma from "../config/prisma-config.js";
 
-// necessary?
+// TODO: is this necessary? for admins perhaps
 export const getAllComments = async (req, res, next) => {};
 
 export const getCommentsByPost = async (req, res, next) => {
-  //
   try {
     const postId = parseInt(req.params.postId);
 
@@ -24,15 +23,10 @@ export const getCommentsByPost = async (req, res, next) => {
   }
 };
 
-// Necessary?
-export const getComment = async (req, res, next) => {};
-
-// TODO: signed up users only
 export const createComment = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId);
-    const userId = 1;
-    // TODO: need user id from current user, not from params, although it will be in params i suppose with passport
+    const userId = req.user.id;
     const { content } = req.body;
 
     if (isNaN(postId)) {
@@ -41,7 +35,6 @@ export const createComment = async (req, res, next) => {
 
     const comment = await prisma.comment.create({
       data: {
-        // TODO: change author id to userId
         authorId: userId,
         postId,
         content,
@@ -55,7 +48,6 @@ export const createComment = async (req, res, next) => {
   }
 };
 
-// Admin only
 export const deleteComment = async (req, res, next) => {
   try {
     const commentId = parseInt(req.params.commentId);

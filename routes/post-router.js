@@ -6,22 +6,17 @@ import {
   editPost,
   deletePost,
 } from "../controllers/post-controller.js";
+import { admin } from "../middleware/auth.js";
 
 const postRouter = Router();
 
-// GETs
+// Public:
 postRouter.get("/posts", getAllPosts);
 postRouter.get("/posts/:postId", getPost);
 
-// Protected:
-
-// POSTs
-postRouter.post("/posts", createPost);
-
-// PUTs/PATCHes
-postRouter.patch("/posts/:postId", editPost);
-
-// DELETEs
-postRouter.delete("/posts/:postId", deletePost);
+// Admin:
+postRouter.post("/posts", admin, createPost);
+postRouter.patch("/posts/:postId", admin, editPost);
+postRouter.delete("/posts/:postId", admin, deletePost);
 
 export default postRouter;

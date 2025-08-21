@@ -82,10 +82,6 @@ export const editPost = async (req, res, next) => {
     }
 
     // TODO: validate this a different way with express-validator
-    if (!data || Object.keys(data).length === 0) {
-      console.error("Error: No form data received");
-      return res.status(400).json({ error: "No form data received" });
-    }
 
     const post = await prisma.post.update({
       where: { id: postId },

@@ -4,18 +4,21 @@ import {
   createComment,
   deleteComment,
 } from "../controllers/comment-controller.js";
+import { auth, admin } from "../middleware/auth.js";
 
 const commentRouter = Router();
 
-// GETs
-
+// Public:
 commentRouter.get("/posts/:postId/comments", getCommentsByPost);
 
-// POSTs
-commentRouter.post("/posts/:postId/comments", createComment);
+// Auth:
+commentRouter.post("/posts/:postId/comments", auth, createComment);
 
-// PUTs/PATCHes
-// DELETEs
-commentRouter.delete("/posts/:postId/comments/:commentId", deleteComment);
+// Admin:
+commentRouter.delete(
+  "/posts/:postId/comments/:commentId",
+  admin,
+  deleteComment
+);
 
 export default commentRouter;
