@@ -1,4 +1,5 @@
 import prisma from "../config/prisma-config.js";
+import { userWithoutPassword } from "../utils/prisma-selectors.js";
 
 // TODO: is this necessary? for admins perhaps
 export const getAllComments = async (req, res, next) => {};
@@ -8,29 +9,32 @@ export const getCommentsByPost = async (req, res, next) => {
     const postId = parseInt(req.params.postId);
 
     if (isNaN(postId)) {
-      return res.status(400).json({ error: "Invalid user id" });
+      console.error("Error: Invalid post ID");
+      return res.status(400).json({ error: "Invalid post ID" });
     }
 
     const comments = await prisma.comment.findMany({
       where: { postId },
       orderBy: { createdAt: "asc" },
+      include: { author: { select: userWithoutPassword } },
     });
 
     res.json(comments);
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: err });
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const createComment = async (req, res, next) => {
   try {
+    const { content } = req.body;
     const postId = parseInt(req.params.postId);
     const userId = req.user.id;
-    const { content } = req.body;
 
     if (isNaN(postId)) {
-      return res.status(400).json({ error: "Invalid user id" });
+      console.error("Error: Invalid post ID");
+      return res.status(400).json({ error: "Invalid post ID" });
     }
 
     const comment = await prisma.comment.create({
@@ -44,7 +48,7 @@ export const createComment = async (req, res, next) => {
     res.json(comment);
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: err });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -53,14 +57,15 @@ export const deleteComment = async (req, res, next) => {
     const commentId = parseInt(req.params.commentId);
 
     if (isNaN(commentId)) {
-      return res.status(400).json({ error: "Invalid user id" });
+      console.error("Error: Invalid comment ID");
+      return res.status(400).json({ error: "Invalid comment ID" });
     }
 
     const comment = await prisma.comment.delete({ where: { id: commentId } });
 
-    res.json(comment);
+    res.json({ message: "Successfully deleted comment." });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: err });
+    res.status(500).json({ error: err.message });
   }
 };

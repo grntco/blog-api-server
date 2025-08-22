@@ -19,6 +19,7 @@ export const register = async (req, res, next) => {
     });
 
     if (!user) {
+      console.error("Error: Unable to create user");
       return res.status(400).json({ error: "Unable to create user" });
     }
 
@@ -31,7 +32,7 @@ export const register = async (req, res, next) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: err });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -44,9 +45,8 @@ export const login = async (req, res, next) => {
     { expiresIn: "7d" },
     (err, token) => {
       if (err) {
-        return res
-          .status(400)
-          .json({ error: "Token generation error: " + err });
+        console.error("Error: Token generation error: ", err);
+        return res.status(400).json({ error: "Token generation error: ", err });
       }
       res.json({
         token,
@@ -59,9 +59,4 @@ export const login = async (req, res, next) => {
       });
     }
   );
-};
-
-export const logout = async (req, res, next) => {
-  // rm jwt on req.user?
-  // passport logout with local
 };

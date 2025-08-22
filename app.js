@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res, next) => {
-  res.send("Hello world!");
+  res.send("This is the API backend for The Odin Project's Blog API project.");
 });
 
 app.use(authRouter);
