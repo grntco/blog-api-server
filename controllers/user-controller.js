@@ -1,15 +1,49 @@
 import prisma from "../config/prisma-config.js";
 import { userWithoutPassword } from "../utils/prisma-selectors.js";
 
-export const getAllUsers = async (req, res, next) => {
-  // search names and email, page limit
-
+export const getUsers = async (req, res, next) => {
   try {
-    const users = await prisma.user.findMany({
-      select: userWithoutPassword,
-    });
+    const { search, page } = req.query;
+    const pageTake = 3;
+    const currentPage = parseInt(page) || 1;
+    const pageSkip = (currentPage - 1) * pageTake;
 
-    res.json(users);
+    const searchWhere = search
+      ? {
+          OR: [
+            { firstName: { contains: search, mode: "insensitive" } },
+            { lastName: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
+    const [users, totalUsersFound, totalUsers] = await Promise.all([
+      prisma.user.findMany({
+        where: searchWhere,
+        skip: pageSkip,
+        take: pageTake,
+        select: userWithoutPassword,
+        orderBy: [
+          { createdAt: "desc" },
+          { firstName: "asc" },
+          { lastName: "asc" },
+          { email: "asc" },
+        ],
+      }),
+      prisma.user.count({ where: searchWhere }),
+      prisma.user.count(),
+    ]);
+
+    res.json({
+      users,
+      meta: {
+        totalUsersFound,
+        totalUsers,
+        currentPage,
+        totalPages: Math.ceil(totalUsersFound / pageTake),
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -45,7 +79,7 @@ export const getUser = async (req, res, next) => {
 export const editUser = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.userId);
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, email, admin } = req.body;
 
     if (isNaN(userId)) {
       console.error("Error: Invalid user ID");
@@ -58,6 +92,7 @@ export const editUser = async (req, res, next) => {
         firstName,
         lastName,
         email,
+        admin: admin === "true" || admin === true,
       },
       select: userWithoutPassword,
     });
