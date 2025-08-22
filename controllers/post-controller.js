@@ -1,15 +1,49 @@
 import prisma from "../config/prisma-config.js";
 import { userWithoutPassword } from "../utils/prisma-selectors.js";
 
-export const getAllPosts = async (req, res, next) => {
+export const getPosts = async (req, res, next) => {
   try {
-    const posts = await prisma.post.findMany({
-      include: {
-        author: { select: userWithoutPassword },
+    const { search, published, page } = req.query;
+    const pageTake = 6;
+    const currentPage = parseInt(page) || 1;
+    const pageSkip = (currentPage - 1) * pageTake;
+
+    const publishedFilter =
+      published === "true" ? true : published === "false" ? false : undefined;
+
+    const searchWhere = {
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+      ...(publishedFilter !== undefined && { published: publishedFilter }),
+    };
+
+    const [posts, totalPostsFound, totalPosts] = await Promise.all([
+      prisma.post.findMany({
+        where: searchWhere,
+        skip: pageSkip,
+        take: pageTake,
+        include: {
+          author: { select: userWithoutPassword },
+        },
+        orderBy: [{ createdAt: "desc" }],
+      }),
+      prisma.post.count({ where: searchWhere }),
+      prisma.post.count(),
+    ]);
+
+    res.json({
+      posts,
+      meta: {
+        totalPostsFound,
+        totalPosts,
+        currentPage,
+        totalPages: Math.ceil(totalPostsFound / pageTake),
       },
     });
-
-    res.json(posts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -94,7 +128,7 @@ export const editPost = async (req, res, next) => {
         slug,
         published: published === "true" || published === true,
       },
-      inlcude: {
+      include: {
         author: {
           select: userWithoutPassword,
         },

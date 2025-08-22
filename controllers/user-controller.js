@@ -4,7 +4,7 @@ import { userWithoutPassword } from "../utils/prisma-selectors.js";
 export const getUsers = async (req, res, next) => {
   try {
     const { search, page } = req.query;
-    const pageTake = 3;
+    const pageTake = 12;
     const currentPage = parseInt(page) || 1;
     const pageSkip = (currentPage - 1) * pageTake;
 

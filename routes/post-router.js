@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getAllPosts,
+  getPosts,
   getPost,
   createPost,
   editPost,
@@ -11,7 +11,7 @@ import { admin } from "../middleware/auth.js";
 const postRouter = Router();
 
 // Public:
-postRouter.get("/posts", getAllPosts);
+postRouter.get("/posts", getPosts);
 postRouter.get("/posts/:postId", getPost);
 
 // Admin:
