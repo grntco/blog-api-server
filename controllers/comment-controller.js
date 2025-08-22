@@ -1,8 +1,18 @@
 import prisma from "../config/prisma-config.js";
 import { userWithoutPassword } from "../utils/prisma-selectors.js";
 
-// TODO: is this necessary? for admins perhaps
-export const getAllComments = async (req, res, next) => {};
+export const getAllComments = async (req, res, next) => {
+  try {
+    const comments = await prisma.comment.findMany({
+      include: { author: userWithoutPassword },
+    });
+
+    res.json(comments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const getCommentsByPost = async (req, res, next) => {
   try {

@@ -1,5 +1,6 @@
 import Router from "express";
 import {
+  getAllComments,
   getCommentsByPost,
   createComment,
   deleteComment,
@@ -15,10 +16,7 @@ commentRouter.get("/posts/:postId/comments", getCommentsByPost);
 commentRouter.post("/posts/:postId/comments", auth, createComment);
 
 // Admin:
-commentRouter.delete(
-  "/posts/:postId/comments/:commentId",
-  admin,
-  deleteComment
-);
+commentRouter.get("/comments", admin, getAllComments);
+commentRouter.delete("/comments/:commentId", admin, deleteComment);
 
 export default commentRouter;
