@@ -2,6 +2,8 @@ import prisma from "../config/prisma-config.js";
 import { userWithoutPassword } from "../utils/prisma-selectors.js";
 
 export const getAllUsers = async (req, res, next) => {
+  // search names and email, page limit
+
   try {
     const users = await prisma.user.findMany({
       select: userWithoutPassword,

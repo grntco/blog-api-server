@@ -1,6 +1,7 @@
 import prisma from "../config/prisma-config.js";
 import { genSalt, hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { admin } from "../middleware/auth.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -29,6 +30,8 @@ export const register = async (req, res, next) => {
       lastName: user.lastName,
       email: user.email,
       admin: user.admin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     });
   } catch (err) {
     console.error(err);
@@ -55,6 +58,7 @@ export const login = async (req, res, next) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
+          admin: user.admin,
         },
       });
     }

@@ -4,4 +4,6 @@ export const userWithoutPassword = {
   lastName: true,
   email: true,
   admin: true,
+  createdAt: true,
+  updatedAt: true,
 };
