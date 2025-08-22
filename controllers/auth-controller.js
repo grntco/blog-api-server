@@ -1,7 +1,6 @@
 import prisma from "../config/prisma-config.js";
 import { genSalt, hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { admin } from "../middleware/auth.js";
 
 export const register = async (req, res, next) => {
   try {
