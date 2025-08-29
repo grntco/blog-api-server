@@ -18,13 +18,13 @@ passport.use(
 
         if (!user) {
           return done(null, false, {
-            message: "No user found with that username.",
+            message: "No user found with that email.",
           });
         }
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
           return done(null, false, {
-            message: "Incorrect password for that username.",
+            message: "Incorrect password.",
           });
         }
         return done(null, user);
