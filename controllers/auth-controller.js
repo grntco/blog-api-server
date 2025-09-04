@@ -14,7 +14,7 @@ export const register = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: "Validation failed.",
         errors: errors.array(),
         formData: {
           firstName,
@@ -40,8 +40,7 @@ export const register = async (req, res, next) => {
       console.error("Error: Unable to create user");
       return res.status(400).json({
         success: false,
-        message: "Unable to create user.",
-        errors: ["Unable to create user."],
+        message: "Unable to create account.",
         formData: {
           firstName,
           lastName,
@@ -67,8 +66,7 @@ export const register = async (req, res, next) => {
     console.error(err);
     res.status(500).json({
       success: false,
-      message: err.message,
-      errors: [err.message],
+      message: "Unable to create account. Please try again later.",
       formData: {
         firstName,
         lastName,
@@ -84,7 +82,7 @@ export const login = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
-      message: "Validation failed",
+      message: "Validation failed.",
       errors: errors.array(),
       formData: {
         email: req.body.email,

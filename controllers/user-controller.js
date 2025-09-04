@@ -1,9 +1,21 @@
 import prisma from "../config/prisma-config.js";
 import { userWithoutPassword } from "../utils/prisma-selectors.js";
+import { matchedData, validationResult } from "express-validator";
 
 export const getUsers = async (req, res, next) => {
   try {
-    const { search, page } = req.query;
+    const errors = validationResult(req);
+    const { search, page } = matchedData(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid query parameters",
+        errors: errors.array(),
+        formData: { search },
+      });
+    }
+
     const pageTake = 12;
     const currentPage = parseInt(page) || 1;
     const pageSkip = (currentPage - 1) * pageTake;
@@ -36,6 +48,8 @@ export const getUsers = async (req, res, next) => {
     ]);
 
     res.json({
+      success: true,
+      message: "Returned users successfully.",
       users,
       meta: {
         totalUsersFound,
@@ -46,7 +60,10 @@ export const getUsers = async (req, res, next) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve users.",
+    });
   }
 };
 
@@ -55,8 +72,10 @@ export const getUser = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     if (isNaN(userId)) {
-      console.error("Error: Invalid user ID");
-      return res.status(400).json({ error: "Invalid user id" });
+      console.error("Error: Invalid user ID.");
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID." });
     }
 
     const user = await prisma.user.findUnique({
@@ -66,7 +85,9 @@ export const getUser = async (req, res, next) => {
 
     if (!user) {
       console.error("Error: No user found");
-      return res.status(404).json({ error: "No user found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "No user found." });
     }
 
     res.json(user);
@@ -78,12 +99,32 @@ export const getUser = async (req, res, next) => {
 
 export const editUser = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed.",
+        errors: errors.array(),
+      });
+    }
+
     const userId = parseInt(req.params.userId);
-    const { firstName, lastName, email, admin } = req.body;
 
     if (isNaN(userId)) {
       console.error("Error: Invalid user ID");
-      return res.status(400).json({ error: "Invalid user ID" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID" });
+    }
+
+    const { firstName, lastName, email, admin } = matchedData(req);
+    
+    if (!firstName && !lastName && !email && admin === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field must be provided for update.",
+      });
     }
 
     const user = await prisma.user.update({
@@ -97,10 +138,13 @@ export const editUser = async (req, res, next) => {
       select: userWithoutPassword,
     });
 
-    res.json(user);
+    res.json({ success: true, message: "Edited user successfully.", user });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Unable to edit user. Please try again later.",
+    });
   }
 };
 
@@ -109,19 +153,25 @@ export const deleteUser = async (req, res, next) => {
     const userId = parseInt(req.params.userId);
 
     if (isNaN(userId)) {
-      console.error("Error: Invalid user ID");
-      return res.status(400).json({ error: "Invalid user ID" });
+      console.error("Error: Invalid user ID.");
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID." });
     }
 
     const user = await prisma.user.delete({ where: { id: userId } });
 
     res.json({
+      success: true,
       message: `Successfully deleted user "${
         user.firstName + " " + user.lastName
       }".`,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Unable to delete user. Please try again later.",
+    });
   }
 };
