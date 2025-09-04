@@ -1,5 +1,9 @@
 import Router from "express";
 import {
+  validateGetComments,
+  validateCreateComment,
+} from "../middleware/validation/comment-validation.js";
+import {
   getComments,
   getCommentsByPost,
   createComment,
@@ -13,10 +17,15 @@ const commentRouter = Router();
 commentRouter.get("/posts/:postId/comments", getCommentsByPost);
 
 // Auth:
-commentRouter.post("/posts/:postId/comments", auth, createComment);
+commentRouter.post(
+  "/posts/:postId/comments",
+  auth,
+  validateCreateComment,
+  createComment
+);
 
 // Admin:
-commentRouter.get("/comments", admin, getComments);
+commentRouter.get("/comments", admin, validateGetComments, getComments);
 commentRouter.delete("/comments/:commentId", admin, deleteComment);
 
 export default commentRouter;

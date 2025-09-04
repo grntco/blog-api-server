@@ -49,7 +49,7 @@ export const getUsers = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: "Returned users successfully.",
+      message: "Successfully retrieved users.",
       users,
       meta: {
         totalUsersFound,
