@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import authRouter from "./routes/auth-router.js";
 import postRouter from "./routes/post-router.js";
 import userRouter from "./routes/user-router.js";
@@ -12,6 +13,11 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // MIDDLEWARE
+const corsOptions = {
+  origin: ["http://localhost:5173"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
