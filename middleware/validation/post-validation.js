@@ -28,13 +28,11 @@ const validateCreatePost = [
   body("title")
     .trim()
     .notEmpty()
-    .escape()
     .isLength({ min: 2, max: 100 })
     .withMessage("Please enter a valid post title."),
   body("content")
     .trim()
     .notEmpty()
-    .escape()
     .isLength({ min: 10, max: 30000 })
     .withMessage("Please enter valid post content."),
   body("slug")
@@ -69,7 +67,6 @@ const validateEditPost = [
     .notEmpty()
     .withMessage("Please enter a post title.")
     .bail()
-    .escape()
     .isLength({ min: 2, max: 100 })
     .withMessage("Please enter a valid post title."),
   body("content")
@@ -77,7 +74,6 @@ const validateEditPost = [
     .notEmpty()
     .withMessage("Please enter post content.")
     .bail()
-    .escape()
     .isLength({ min: 10, max: 30000 })
     .withMessage("Please enter valid post content."),
   body("slug")

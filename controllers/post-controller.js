@@ -8,8 +8,6 @@ export const getPosts = async (req, res, next) => {
     const errors = validationResult(req);
     const { search, published, page } = matchedData(req);
 
-    console.log(published);
-
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,

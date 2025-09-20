@@ -24,14 +24,12 @@ const validateEditUser = [
     .optional()
     .trim()
     .notEmpty()
-    .escape()
     .isLength({ min: 2, max: 16 })
     .withMessage("Enter a valid first name."),
   body("lastName")
     .optional()
     .trim()
     .notEmpty()
-    .escape()
     .isLength({ min: 2, max: 16 })
     .withMessage("Enter a valid last name."),
   body("email")

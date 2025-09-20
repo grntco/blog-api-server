@@ -7,7 +7,6 @@ const validateRegister = [
     .notEmpty()
     .withMessage("Please enter a first name.")
     .bail()
-    .escape()
     .isLength({ min: 2, max: 16 })
     .withMessage("A name must be between 2 and 16 characters."),
   body("lastName")
@@ -15,7 +14,6 @@ const validateRegister = [
     .notEmpty()
     .withMessage("Please enter a last name.")
     .bail()
-    .escape()
     .isLength({ min: 2, max: 16 })
     .withMessage("A name must be between 2 and 16 characters."),
   body("email")

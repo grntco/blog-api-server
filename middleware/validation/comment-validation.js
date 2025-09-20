@@ -22,7 +22,6 @@ const validateCreateComment = [
   body("content")
     .trim()
     .notEmpty()
-    .escape()
     .isLength({ min: 2, max: 1000 })
     .withMessage("Please enter a valid comment."),
 ];
