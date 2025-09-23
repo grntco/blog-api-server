@@ -54,6 +54,14 @@ export const getPosts = async (req, res, next) => {
         currentPage,
         totalPages: Math.ceil(totalPostsFound / pageTake),
       },
+      ...(search || published
+        ? {
+            formData: {
+              search,
+              published: true,
+            },
+          }
+        : {}),
     });
   } catch (err) {
     console.error(err);
