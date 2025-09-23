@@ -206,7 +206,10 @@ export const deletePost = async (req, res, next) => {
 
     const post = await prisma.post.delete({ where: { id: postId } });
 
-    res.json({ message: `Successfully deleted the post "${post.title}".` });
+    res.json({
+      success: true,
+      message: `Successfully deleted the post "${post.title}".`,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
