@@ -14,7 +14,7 @@ const app = express();
 
 // MIDDLEWARE
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:8888", "http://localhost:9999"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   // credentials: true,
