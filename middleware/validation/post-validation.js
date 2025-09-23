@@ -35,26 +35,26 @@ const validateCreatePost = [
     .notEmpty()
     .isLength({ min: 10, max: 30000 })
     .withMessage("Please enter valid post content."),
-  body("slug")
-    .optional()
-    .trim()
-    .notEmpty()
-    .isLength({ min: 2, max: 100 })
-    .matches(/^[a-zA-Z0-9\s-]+$/)
-    .withMessage("Enter a valid slug.")
-    .bail()
-    .custom(async (value) => {
-      const existingSlug = await prisma.post.findUnique({
-        where: {
-          slug: value,
-        },
-      });
+  // body("slug")
+  //   .optional()
+  //   .trim()
+  //   .notEmpty()
+  //   .isLength({ min: 2, max: 100 })
+  //   .matches(/^[a-zA-Z0-9\s-]+$/)
+  //   .withMessage("Enter a valid slug.")
+  //   .bail()
+  //   .custom(async (value) => {
+  //     const existingSlug = await prisma.post.findUnique({
+  //       where: {
+  //         slug: value,
+  //       },
+  //     });
 
-      if (existingSlug) {
-        throw new Error("The slug provided is already taken.");
-      }
-      return true;
-    }),
+  //     if (existingSlug) {
+  //       throw new Error("The slug provided is already taken.");
+  //     }
+  //     return true;
+  //   }),
   body("published")
     .toBoolean()
     .isBoolean()
