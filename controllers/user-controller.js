@@ -57,6 +57,13 @@ export const getUsers = async (req, res, next) => {
         currentPage,
         totalPages: Math.ceil(totalUsersFound / pageTake),
       },
+      ...(search
+        ? {
+            formData: {
+              search,
+            },
+          }
+        : {}),
     });
   } catch (err) {
     console.error(err);
@@ -119,7 +126,7 @@ export const editUser = async (req, res, next) => {
     }
 
     const { firstName, lastName, email, admin } = matchedData(req);
-    
+
     if (!firstName && !lastName && !email && admin === undefined) {
       return res.status(400).json({
         success: false,
