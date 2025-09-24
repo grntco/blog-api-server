@@ -28,7 +28,10 @@ export const getComments = async (req, res, next) => {
         where: searchWhere,
         skip: pageSkip,
         take: pageTake,
-        include: { author: { select: userWithoutPassword } },
+        include: {
+          author: { select: userWithoutPassword },
+          post: { select: { id: true, title: true } },
+        },
         orderBy: [{ createdAt: "desc" }, { content: "asc" }],
       }),
       prisma.comment.count({ where: searchWhere }),
@@ -45,6 +48,13 @@ export const getComments = async (req, res, next) => {
         currentPage,
         totalPages: Math.ceil(totalCommentsFound / pageTake),
       },
+      ...(search
+        ? {
+            formData: {
+              search,
+            },
+          }
+        : {}),
     });
   } catch (err) {
     console.error(err);
