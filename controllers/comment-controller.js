@@ -65,6 +65,39 @@ export const getComments = async (req, res, next) => {
   }
 };
 
+export const getComment = async (req, res, next) => {
+  try {
+    const commentId = parseInt(req.params.commentId);
+
+    if (isNaN(commentId)) {
+      console.error("Error: Invalid comment ID.");
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid comment ID." });
+    }
+
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include: {
+        author: { select: userWithoutPassword },
+        post: { select: { id: true, title: true } },
+      },
+    });
+
+    if (!comment) {
+      console.error("Error: No comment found");
+      return res
+        .status(404)
+        .json({ success: false, message: "No comment found." });
+    }
+
+    res.json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const getCommentsByPost = async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId);

@@ -5,6 +5,7 @@ import {
 } from "../middleware/validation/comment-validation.js";
 import {
   getComments,
+  getComment,
   getCommentsByPost,
   createComment,
   deleteComment,
@@ -26,6 +27,7 @@ commentRouter.post(
 
 // Admin:
 commentRouter.get("/comments", admin, validateGetComments, getComments);
+commentRouter.get("/comments/:commentId", admin, getComment);
 commentRouter.delete("/comments/:commentId", admin, deleteComment);
 
 export default commentRouter;
