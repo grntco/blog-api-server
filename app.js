@@ -14,7 +14,10 @@ const app = express();
 
 // MIDDLEWARE
 const corsOptions = {
-  origin: ["http://localhost:8888", "http://localhost:9999"],
+  origin: [
+    process.env.USER_BLOG_DOMAIN || "http://localhost:8888",
+    process.env.ADMIN_DASHBOARD_DOMAIN || "http://localhost:9999",
+  ], // whitelist
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   // credentials: true,

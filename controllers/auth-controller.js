@@ -77,6 +77,8 @@ export const register = async (req, res, next) => {
 };
 
 export const login = async (req, res, next) => {
+  const ADMIN_DASHBOARD_DOMAIN =
+    process.env.ADMIN_DASHBOARD_DOMAIN || "http://localhost:9999";
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -103,6 +105,19 @@ export const login = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: info?.message || "Unable to login. Please try again later.",
+        formData: {
+          email: req.body.email,
+        },
+      });
+    }
+
+    // Login for admin dashboard
+    if (req.get("origin") === ADMIN_DASHBOARD_DOMAIN && !user.admin) {
+      return res.status(401).json({
+        success: false,
+        message:
+          info?.message ||
+          "You are not an admin and do not have access to the dashboard.",
         formData: {
           email: req.body.email,
         },

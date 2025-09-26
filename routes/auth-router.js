@@ -10,5 +10,6 @@ const authRouter = Router();
 // Public:
 authRouter.post("/auth/register", validateRegister, register);
 authRouter.post("/auth/login", validateLogin, login);
+authRouter.post("/auth/admin/login", validateLogin, login);
 
 export default authRouter;
