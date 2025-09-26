@@ -3,7 +3,75 @@ import { userWithoutPassword } from "../utils/prisma-selectors.js";
 import createSlug from "../utils/create-slug.js";
 import { matchedData, validationResult } from "express-validator";
 
-export const getPosts = async (req, res, next) => {
+export const getPublishedPosts = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    const { search, published, page } = matchedData(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid query parameters",
+        errors: errors.array(),
+      });
+    }
+
+    const pageTake = 6;
+    const currentPage = parseInt(page) || 1;
+    const pageSkip = (currentPage - 1) * pageTake;
+
+    const searchWhere = {
+      published: true,
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+    };
+
+    const [posts, totalPostsFound, totalPosts] = await Promise.all([
+      prisma.post.findMany({
+        where: searchWhere,
+        skip: pageSkip,
+        take: pageTake,
+        include: {
+          author: { select: userWithoutPassword },
+        },
+        orderBy: [{ createdAt: "desc" }],
+      }),
+      prisma.post.count({ where: searchWhere }),
+      prisma.post.count(),
+    ]);
+
+    res.json({
+      success: true,
+      message: "Successfully retrieved posts.",
+      posts,
+      meta: {
+        totalPostsFound,
+        totalPosts,
+        currentPage,
+        totalPages: Math.ceil(totalPostsFound / pageTake),
+      },
+      ...(search || published
+        ? {
+            formData: {
+              search,
+            },
+          }
+        : {}),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve posts. Please try again later.",
+    });
+  }
+};
+
+export const getAllPosts = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     const { search, published, page } = matchedData(req);
