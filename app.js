@@ -6,6 +6,7 @@ import postRouter from "./routes/post-router.js";
 import userRouter from "./routes/user-router.js";
 import commentRouter from "./routes/comment-router.js";
 import { handleGeneralErrors } from "./middleware/general-errors.js";
+import { generalLimiter } from "./middleware/rate-limiter.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ const corsOptions = {
   // credentials: true,
 };
 app.use(cors(corsOptions));
+app.use(generalLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
